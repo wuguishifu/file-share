@@ -1,3 +1,4 @@
 test-data/*
 !test-data/.gitkeep
 !test-data/db.json
+docker-compose.yml

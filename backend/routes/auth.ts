@@ -44,7 +44,7 @@ authRouter.post('/refresh-token', verifyToken, (req: Request, res: Response) => 
 
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(403).send({ erorr: 'missing credentials' });
+    if (!token) return res.status(403).send({ error: 'missing credentials' });
 
     try {
         const { userId } = jwt.verify(token, secret) as { userId: string, iat: number };
