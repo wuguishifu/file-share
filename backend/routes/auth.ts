@@ -3,6 +3,13 @@ import express, { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { db } from '../store';
+import secret from '../secret';
+
+declare module 'express' {
+    interface Request {
+        userId?: string;
+    }
+}
 
 export const authRouter = express.Router();
 
@@ -25,7 +32,13 @@ authRouter.post('/login', async (req, res) => {
         return res.status(401).send({ error: 'invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user.id }, 'secret');
+    const token = jwt.sign({ userId: user.id }, secret);
+    res.status(200).send({ token });
+});
+
+authRouter.post('/refresh-token', verifyToken, (req: Request, res: Response) => {
+    const userId = req.userId;
+    const token = jwt.sign({ userId }, secret);
     res.status(200).send({ token });
 });
 
@@ -34,7 +47,8 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     if (!token) return res.status(403).send({ erorr: 'missing credentials' });
 
     try {
-        jwt.verify(token, 'secret');
+        const { userId } = jwt.verify(token, secret) as { userId: string, iat: number };
+        req.userId = userId;
     } catch (error) {
         return res.status(401).send({ error: 'invalid credentials' });
     }
