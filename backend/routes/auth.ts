@@ -1,56 +1,27 @@
-import bcrypt from 'bcryptjs';
 import express, { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import admin from 'firebase-admin';
 
-import { db } from '../store';
-import secret from '../secret';
-
-declare module 'express' {
-    interface Request {
-        userId?: string;
-    }
-}
+admin.initializeApp({
+    credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+});
 
 export const authRouter = express.Router();
 
-authRouter.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username) return res.status(400).send({ error: 'missing username' });
-    if (!password) return res.status(400).send({ error: 'missing password' });
+export async function verifyToken(req: Request, res: Response, next: NextFunction) {
+    const idToken = req.headers.authorization?.split('Bearer ')[1];
 
-    let user;
-    try {
-        user = await db.getData(`/users/${username}`);
-    } catch (error) {
-        if (process.env.NODE_ENV === 'production') {
-            return res.status(401).send({ error: 'invalid credentials' });
-        } else {
-            return res.status(404).send({ error: 'user not found' });
-        }
-    }
-    if (!user?.password || !bcrypt.compareSync(password, user.password)) {
-        return res.status(401).send({ error: 'invalid credentials' });
-    }
-
-    const token = jwt.sign({ userId: user.id }, secret);
-    res.status(200).send({ token });
-});
-
-authRouter.post('/refresh-token', verifyToken, (req: Request, res: Response) => {
-    const userId = req.userId;
-    const token = jwt.sign({ userId }, secret);
-    res.status(200).send({ token });
-});
-
-export function verifyToken(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(403).send({ error: 'missing credentials' });
+    if (!idToken) return res.status(401).send({ error: 'authorization missing' });
 
     try {
-        const { userId } = jwt.verify(token, secret) as { userId: string, iat: number };
-        req.userId = userId;
+        await admin.auth().verifyIdToken(idToken);
     } catch (error) {
-        return res.status(401).send({ error: 'invalid credentials' });
+        return res.status(401).send({ error: 'unauthorized' });
     }
 
     next();
