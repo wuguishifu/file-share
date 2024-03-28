@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "build": "cd .. && docker build -f backend/Dockerfile -t wuguishifu/file-share:backend .",
+    "prebuild": "npm run compile",
+    "compile": "npx tsc",
+    "precompile": "npm run lint",
+    "up": "docker-compose -f docker-compose.yml up -d",
+    "down": "docker-compose -f docker-compose.yml down"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +19,13 @@
     "express": "^4.19.2",
     "typescript": "^5.4.3",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.4",
+    "@types/express": "^4.17.21",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0"
   }
 }

@@ -1,0 +1,19 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "include": [
+        "index.ts",
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "outDir": "dist",
+        "lib": [
+            "ES6",
+            "DOM"
+        ],
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    }
+}
