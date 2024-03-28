@@ -1,10 +1,12 @@
 version: "3.8"
-name: "file-share"
+name: file-share
 services:
   backend:
-    image: "wuguishifu/file-share:backend"
-    container_name: "backend" 
-    ports:
-      - "3000:8080"
+    image: wuguishifu/file-share:backend
+    container_name: backend 
     environment:
       - "PORT=8080"
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - C:/Users/brame/Developer/data/file-share:/data
