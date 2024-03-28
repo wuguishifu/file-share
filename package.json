@@ -6,10 +6,9 @@
   "scripts": {
     "prepare": "husky",
     "test": "echo \"no tests specified\"",
-    "lint": "npm run lint:backend & npm run lint:desktop & npm run lint:web",
+    "lint": "npm run lint:backend",
     "lint:backend": "cd backend && npm run lint",
-    "lint:desktop": "cd desktop && npm run lint",
-    "lint:web": "cd web && npm run lint"
+    "build:backend": "cd backend && npm run build"
   },
   "keywords": [],
   "author": "",
