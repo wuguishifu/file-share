@@ -1,0 +1,25 @@
+{
+  "name": "file-share",
+  "version": "1.0.0",
+  "description": "whats up it&apos;s ya boi wugui and today i&apos;m back with another useless application",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "husky",
+    "test": "echo \"no tests specified\"",
+    "lint": "npm run lint:backend & npm run lint:desktop & npm run lint:web",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:desktop": "cd desktop && npm run lint",
+    "lint:web": "cd web && npm run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "backend",
+    "web",
+    "desktop"
+  ],
+  "devDependencies": {
+    "husky": "^9.0.11"
+  }
+}
