@@ -1,12 +1,13 @@
 import express from 'express';
 import http from 'http';
+import { router } from './routes';
 
 const app = express();
 const server = http.createServer(app);
 
-app.get('/', (_, res) => {
-    return res.status(200).send('<h1>Hello World</h1>');
-});
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(router);
 
 let port = process.env.PORT;
 if (!port?.length || isNaN(+port)) port = '8080';
@@ -15,20 +16,25 @@ server.listen(+port, () => {
     console.log('Server is running on port', port);
 });
 
-process.on('SIGINT', () => {
-    process.exit(0);
-});
+function close(code: number = 0) {
+    server.close(error => {
+        if (error) {
+            console.error(error);
+            process.exit(1);
+        }
+        process.exit(code);
+    });
+}
 
-process.on('SIGTERM', () => {
-    process.exit(0);
-});
+process.on('SIGINT', close);
+process.on('SIGTERM', close);
 
 process.on('uncaughtException', (e) => {
     console.error(e);
-    process.exit(0);
+    close(1);
 });
 
 process.on('unhandledRejection', (e) => {
     console.error(e);
-    process.exit(1);
+    close(1);
 });

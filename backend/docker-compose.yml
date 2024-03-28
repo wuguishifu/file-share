@@ -6,7 +6,9 @@ services:
     container_name: backend 
     environment:
       - "PORT=8080"
-    network_mode: host
+      - "NODE_ENV=production"
+    ports:
+      - "3000:8080"
     restart: unless-stopped
     volumes:
       - C:/Users/brame/Developer/data/file-share:/data
